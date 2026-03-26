@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>DC 통합 갤러리</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 16px;
+      width: 380px;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+    }
+    h1 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+    .preset-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .preset-tab {
+      flex: 1;
+      padding: 9px 8px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #1b1b1b;
+      color: #ddd;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .preset-tab.active {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #fff;
+    }
+    .preset-name-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #1b1b1b;
+      color: #fff;
+      outline: none;
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    #renamePresetBtn {
+      background: #374151;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    #addBtn {
+      background: #3b82f6;
+      color: white;
+      white-space: nowrap;
+    }
+    #openViewerBtn {
+      width: 100%;
+      margin-top: 12px;
+      background: #16a34a;
+      color: white;
+    }
+    #message {
+      min-height: 18px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #fca5a5;
+    }
+    .preset-info {
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      max-height: 280px;
+      overflow-y: auto;
+      border: 1px solid #222;
+      border-radius: 10px;
+      background: #181818;
+    }
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #242424;
+    }
+    li:last-child { border-bottom: none; }
+    .gallery-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .gallery-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .gallery-id {
+      font-size: 11px;
+      color: #aaa;
+    }
+    .remove-btn {
+      background: #dc2626;
+      color: white;
+      padding: 8px 10px;
+      flex-shrink: 0;
+    }
+    .hint {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #9ca3af;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <h1>DC 통합 갤러리</h1>
+
+  <div class="preset-tabs">
+    <button class="preset-tab active" data-index="0">프리셋1</button>
+    <button class="preset-tab" data-index="1">프리셋2</button>
+    <button class="preset-tab" data-index="2">프리셋3</button>
+  </div>
+
+  <div class="preset-name-row">
+    <input id="presetNameInput" type="text" placeholder="프리셋 이름 입력" />
+    <button id="renamePresetBtn">이름변경</button>
+  </div>
+
+  <div id="presetInfo" class="preset-info">현재 프리셋 불러오는 중...</div>
+
+  <div class="row">
+    <input id="galleryIdInput" type="text" placeholder="갤러리 id 입력 예) ncdinos, giants_new3" />
+    <button id="addBtn">갤러리 추가</button>
+  </div>
+
+  <div id="message"></div>
+
+  <ul id="galleryList"></ul>
+
+  <button id="openViewerBtn">통합갤러리 보기</button>
+
+  <div class="hint">
+    쉼표로 여러 개 추가 가능함<br />
+    정규갤 / 마이너갤 / 미니갤 순서로 자동 확인함
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

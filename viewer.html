@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>DC 통합 갤러리 보기</title>
+  <style>
+    :root {
+      --dc-blue: #3b4890;
+      --dc-blue-dark: #29367c;
+      --line: #d5d5d5;
+      --head-bg: #f3f4f7;
+      --text: #222;
+      --subtext: #666;
+      --bg: #ffffff;
+      --page-bg: #f5f6f8;
+      --row-hover: #f8faff;
+      --button-bg: #fff;
+      --button-text: #333;
+      --button-line: #c4c8d4;
+      --table-top: #3b4890;
+      --link: #222;
+      --link-hover: #d31900;
+      --empty: #888;
+      --status-bg: #f7f8fa;
+      --status-line: #d9dce3;
+      --panel-bg: #fff;
+      --panel-line: #d9dce3;
+      --input-bg: #fff;
+    }
+
+    body.dark {
+      --dc-blue: #7c89d7;
+      --dc-blue-dark: #6c78c7;
+      --line: #3b4256;
+      --head-bg: #22293a;
+      --text: #e8ecf3;
+      --subtext: #aeb7c8;
+      --bg: #171b25;
+      --page-bg: #10131a;
+      --row-hover: #1d2330;
+      --button-bg: #202636;
+      --button-text: #e8ecf3;
+      --button-line: #3c465d;
+      --table-top: #6e7bd0;
+      --link: #f0f3fa;
+      --link-hover: #8fb2ff;
+      --empty: #99a3b5;
+      --status-bg: #171d29;
+      --status-line: #313a4f;
+      --panel-bg: #171d29;
+      --panel-line: #313a4f;
+      --input-bg: #111621;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: "Malgun Gothic", "맑은 고딕", Apple SD Gothic Neo, Arial, sans-serif;
+      font-size: 12px;
+    }
+
+    .wrap {
+      width: 800px;
+      max-width: calc(100% - 24px);
+      margin: 20px auto 32px;
+    }
+
+    .top-title-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .title-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      padding-top: 2px;
+    }
+
+    .title-box h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1;
+      color: var(--dc-blue);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      display: none;
+    }
+
+    .title-box .desc {
+      color: var(--subtext);
+      font-size: 11px;
+      line-height: 1.2;
+      display: none;
+    }
+
+    .toolbar-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .control-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .top-controls,
+    .sub-controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .dc-btn {
+      min-width: 78px;
+      height: 30px;
+      padding: 0 12px;
+      border: 1px solid var(--button-line);
+      background: var(--button-bg);
+      color: var(--button-text);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .dc-btn:hover {
+      border-color: var(--dc-blue);
+      color: var(--dc-blue);
+    }
+
+    .dc-btn.active {
+      background: var(--dc-blue);
+      border-color: var(--dc-blue-dark);
+      color: #fff;
+    }
+
+    .dc-btn.primary {
+      background: var(--dc-blue);
+      border-color: var(--dc-blue-dark);
+      color: #fff;
+    }
+
+    .dc-btn.primary:hover {
+      color: #fff;
+    }
+
+    .status-box {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      border: 1px solid var(--status-line);
+      background: var(--status-bg);
+    }
+
+    .status-text {
+      color: var(--subtext);
+      font-size: 12px;
+    }
+
+    .filter-panels {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .filter-panel {
+      display: none;
+      padding: 8px 10px;
+      border: 1px solid var(--panel-line);
+      background: var(--panel-bg);
+    }
+
+    .filter-panel.open {
+      display: block;
+    }
+
+    #galleryFilterPanel {
+      display: block;
+      padding: 6px 8px;
+      margin-bottom: 6px;
+    }
+
+    .gallery-check-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      overflow: visible;
+      white-space: normal;
+      padding-bottom: 0;
+    }
+
+    .gallery-check-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 22px;
+      padding: 0 6px;
+      border: 1px solid var(--panel-line);
+      background: var(--bg);
+      flex: 0 0 auto;
+      max-width: 140px;
+    }
+
+    .gallery-check-item input {
+      margin: 0;
+      transform: scale(0.9);
+    }
+
+    .gallery-check-label {
+      min-width: 0;
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .recommend-filter-wrap {
+      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .recommend-filter-pop {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      z-index: 30;
+      min-width: 220px;
+      padding: 8px;
+      border: 1px solid var(--panel-line);
+      background: var(--panel-bg);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    }
+
+    .recommend-filter-pop.open {
+      display: block;
+    }
+
+    .recommend-filter-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: nowrap;
+    }
+
+    .recommend-filter-pop .dc-btn {
+      min-width: 52px;
+      height: 24px;
+      padding: 0 6px;
+      font-size: 10px;
+    }
+
+    .mini-input {
+      width: 92px;
+      height: 24px;
+      padding: 0 8px;
+      border: 1px solid var(--button-line);
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      font-size: 10px;
+    }
+
+    .table-frame {
+      border-top: 2px solid var(--table-top);
+      background: var(--bg);
+      box-shadow: 0 0 0 1px var(--line) inset;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      background: var(--bg);
+    }
+
+    thead th {
+      height: 30px;
+      padding: 0 10px;
+      border-bottom: 1px solid var(--line);
+      background: var(--head-bg);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    tbody td {
+      height: 20px;
+      padding: 0 10px;
+      border-bottom: 1px solid var(--line);
+      color: var(--text);
+      font-size: 12px;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: var(--row-hover);
+    }
+
+    .col-gallery {
+      width: 124px;
+      text-align: center;
+    }
+
+    .col-title {
+      width: auto;
+      text-align: left;
+    }
+
+    .col-num {
+      width: 45px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .col-date {
+      width: 92px;
+      text-align: center;
+      color: var(--subtext);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .gallery-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 90px;
+      height: 26px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      box-sizing: border-box;
+    }
+
+    .title-link {
+      display: inline-block;
+      max-width: calc(100% - 100px);
+      color: var(--link);
+      text-decoration: none;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .title-link:hover {
+      color: var(--link-hover);
+      text-decoration: underline;
+    }
+
+    .comment-inline {
+      margin-left: 4px;
+      color: #d31900;
+      font-weight: 700;
+    }
+
+    body.dark .comment-inline {
+      color: #ff8f8f;
+    }
+
+    .empty {
+      padding: 26px 12px !important;
+      text-align: center;
+      color: var(--empty);
+      font-size: 12px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      min-width: 32px;
+      height: 30px;
+      padding: 0 10px;
+      border: 1px solid var(--button-line);
+      background: var(--button-bg);
+      color: var(--button-text);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .page-btn:hover {
+      border-color: var(--dc-blue);
+      color: var(--dc-blue);
+    }
+
+    .page-btn.active {
+      background: var(--dc-blue);
+      border-color: var(--dc-blue-dark);
+      color: #fff;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .footer-note {
+      margin-top: 10px;
+      color: var(--subtext);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+      .wrap {
+        max-width: calc(100% - 16px);
+        margin-top: 12px;
+      }
+
+      .top-title-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toolbar-wrap {
+        width: 100%;
+        align-items: flex-end;
+      }
+
+      .control-box {
+        justify-content: flex-end;
+      }
+
+      .top-controls,
+      .sub-controls {
+        justify-content: flex-end;
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top-title-bar">
+      <div class="title-box">
+        <h1 id="viewerTitle">DC 통합 갤러리</h1>
+        <div id="viewerSubText" class="desc">프리셋 불러오는 중...</div>
+      </div>
+
+      <div class="toolbar-wrap">
+        <div class="control-box top-controls">
+          <button class="dc-btn sort-btn active" data-sort="latest">최신순</button>
+          <button class="dc-btn sort-btn" data-sort="recommend">추천순</button>
+          <button class="dc-btn sort-btn" data-sort="comments">댓글순</button>
+          <button class="dc-btn sort-btn" data-sort="views">조회순</button>
+        </div>
+
+        <div class="control-box sub-controls">
+          <button id="galleryFilterToggleBtn" class="dc-btn" style="display:none;">갤러리선택</button>
+
+          <div class="recommend-filter-wrap">
+            <button id="recommendFilterToggleBtn" class="dc-btn">추천필터</button>
+
+            <div id="recommendFilterPanel" class="recommend-filter-pop">
+              <div class="recommend-filter-row">
+                <input id="recommendMinInput" class="mini-input" type="number" min="0" placeholder="최소 추천수" />
+                <button id="applyRecommendFilterBtn" class="dc-btn primary">적용</button>
+                <button id="resetRecommendFilterBtn" class="dc-btn">초기화</button>
+              </div>
+            </div>
+          </div>
+
+          <button id="themeToggleBtn" class="dc-btn">다크모드</button>
+          <button id="reloadBtn" class="dc-btn primary">새로고침</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-box">
+      <div id="status" class="status-text">불러오는 중...</div>
+    </div>
+
+    <div class="filter-panels">
+      <div id="galleryFilterPanel" class="filter-panel">
+        <div id="galleryCheckboxList" class="gallery-check-grid"></div>
+      </div>
+    </div>
+
+    <div class="table-frame">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-gallery">갤러리</th>
+            <th class="col-title">제목</th>
+            <th class="col-num">추천</th>
+            <th class="col-num">댓글</th>
+            <th class="col-num">조회</th>
+            <th class="col-date">작성일</th>
+          </tr>
+        </thead>
+        <tbody id="postTableBody">
+          <tr>
+            <td colspan="6" class="empty">불러오는 중...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+
+    <div class="footer-note">
+      공지, 광고성 글은 제외하고 표시함
+    </div>
+  </div>
+
+  <script src="viewer.js"></script>
+</body>
+
+</html>

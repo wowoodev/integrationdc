@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "DC 통합 갤러리",
+  "description": "여러 디시 갤러리 글을 한 페이지에서 모아보고, 공지/광고를 숨기는 확장 프로그램",
+  "version": "1.0.0",
+  "permissions": ["storage"],
+  "host_permissions": ["https://gall.dcinside.com/*"],
+  "action": {
+    "default_title": "DC 통합 갤러리",
+    "default_popup": "popup.html"
+  }
+}
